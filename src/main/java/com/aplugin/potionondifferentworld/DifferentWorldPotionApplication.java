@@ -140,7 +140,7 @@ public final class DifferentWorldPotionApplication extends JavaPlugin implements
         if (potionEffectType == null) {
             return;
         }
-        int duration = getConfig().getConfigurationSection("worldList").getConfigurationSection(p.getWorld().getName()).getInt("duration") / 20; // 转化为tick
+        int duration = getConfig().getConfigurationSection("worldList").getConfigurationSection(p.getWorld().getName()).getInt("duration") * 20; // 转化为tick
         int amplifier = getConfig().getConfigurationSection("worldList").getConfigurationSection(p.getWorld().getName()).getInt("amplifier");
         Collection<PotionEffect> playerEffects = p.getActivePotionEffects();
         for (PotionEffect effect : playerEffects) {
