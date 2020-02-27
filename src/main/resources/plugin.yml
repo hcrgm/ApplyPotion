@@ -1,0 +1,8 @@
+name: PotionOnDifferentWorld
+version: ${project.version}
+api-version: 1.13
+main: com.aplugin.potionondifferentworld.DifferentWorldPotionApplication
+commands:
+  applypotion:
+    description: 不同世界不同药水效果 - 插件命令(暂只支持重载)
+    usage: /applypotion reload
