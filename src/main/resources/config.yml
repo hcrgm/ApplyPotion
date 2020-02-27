@@ -11,5 +11,5 @@ worldList:
     effect: jump
     # 药水效果倍数
     amplifier: 1
-    # 药水效果持续时间, 默认为无限
+    # 药水效果持续时间, 默认为无限, 单位为秒
     duration: 1000000
