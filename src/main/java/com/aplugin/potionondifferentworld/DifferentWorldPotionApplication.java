@@ -86,12 +86,12 @@ public final class DifferentWorldPotionApplication extends JavaPlugin implements
         applyPotionEffect(e.getPlayer());
     }
 
-    @EventHandler
+    /*@EventHandler
     public void onDrinkMilk(PlayerBucketEmptyEvent e) {
         if (e.getBucket() == Material.MILK_BUCKET) {
             e.setCancelled(true);
         }
-    }
+    }*/
 
     @EventHandler
     public void onChangePotionEffect(EntityPotionEffectEvent e) {
