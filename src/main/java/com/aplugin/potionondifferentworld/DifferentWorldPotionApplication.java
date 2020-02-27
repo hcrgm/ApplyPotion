@@ -28,6 +28,7 @@ public final class DifferentWorldPotionApplication extends JavaPlugin implements
         saveDefaultConfig();
         debug = getConfig().getBoolean("debug");
         getCommand("applypotion").setExecutor(this);
+        applyToAllPlayers();
         getServer().getPluginManager().registerEvents(this, this);
     }
 
