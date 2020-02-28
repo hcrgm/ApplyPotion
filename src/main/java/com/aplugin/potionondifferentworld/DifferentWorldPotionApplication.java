@@ -21,8 +21,8 @@ import java.util.Map;
 
 public final class DifferentWorldPotionApplication extends JavaPlugin implements Listener {
 
-    private boolean debug;
-    private String messagePrefix;
+    private boolean debug; // 调试模式开关
+    private String messagePrefix; // 提示信息前缀
 
     @Override
     public void onEnable() {
@@ -38,7 +38,9 @@ public final class DifferentWorldPotionApplication extends JavaPlugin implements
     public void onDisable() {
         messagePrefix = null;
         if (getConfig().getBoolean("clear")) {
+            // 插件停用时清除本插件对玩家的影响
             for (Player p : Bukkit.getOnlinePlayers()) {
+                // 获取配置中的药水效果列表
                 List<PotionEffect> desiredEffects = getPotionEffectsByWorld(p.getWorld().getName());
                 List<PotionEffectType> desiredEffectTypes = new ArrayList<>();
                 for (PotionEffect effect : desiredEffects) {
@@ -84,14 +86,17 @@ public final class DifferentWorldPotionApplication extends JavaPlugin implements
         return true;
     }
 
+    // 玩家改变世界的事件, 用以设置不同世界对应的不同药水效果
     @EventHandler
     public void onChangeWorld(PlayerChangedWorldEvent e) {
         Player p = e.getPlayer();
+        // 获取玩家在原世界获得的药水效果
         List<PotionEffect> oldEffects = getPotionEffectsByWorld(e.getFrom().getName());
         List<PotionEffectType> oldEffectTypes = new ArrayList<>();
         for (PotionEffect effect : oldEffects) {
             oldEffectTypes.add(effect.getType());
         }
+        // 移除之前的药水效果, 稍后应用新世界的
         for (PotionEffectType type : oldEffectTypes) {
             if (p.hasPotionEffect(type)) {
                 p.removePotionEffect(type);
@@ -100,6 +105,7 @@ public final class DifferentWorldPotionApplication extends JavaPlugin implements
         applyPotionEffect(e.getPlayer());
     }
 
+    // 玩家加入时应用
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         applyPotionEffect(e.getPlayer());
@@ -109,27 +115,33 @@ public final class DifferentWorldPotionApplication extends JavaPlugin implements
     public void onChangePotionEffect(EntityPotionEffectEvent e) {
         if (!(e.getEntity() instanceof Player)) return;
         Player p = (Player) e.getEntity();
+        // 若药水效果的改变是命令或其它插件引起的, 则跳出本方法
         if (e.getCause() == EntityPotionEffectEvent.Cause.COMMAND || e.getCause() == EntityPotionEffectEvent.Cause.PLUGIN)
             return;
         switch (e.getCause()) {
             case MILK:
                 Bukkit.getScheduler().runTaskLater(this, () -> applyPotionEffect(p), 1L); // 延时设置, 等待效果清除
                 break;
+            // 药水时间已过
             case EXPIRATION:
+                // 是否重新应用
                 if (!getConfig().getBoolean("reapply")) break;
+                // 获取玩家应获得的药水效果
                 List<PotionEffect> desiredEffects = getPotionEffectsByWorld(p.getWorld().getName());
                 List<PotionEffectType> desiredEffectTypes = new ArrayList<>();
                 for (PotionEffect effect : desiredEffects) {
                     desiredEffectTypes.add(effect.getType());
                 }
                 if (e.getOldEffect() != null) {
+                    // 判断此过期的药水效果是否在配置中指定的药水效果内
                     if (/*e.getOldEffect().getType() == desiredEffect*/desiredEffectTypes.contains(e.getOldEffect().getType())) {
-                        e.setCancelled(true);
+                        e.setCancelled(true); // 取消本事件, 并重新设置药水效果
                         applyPotionEffect(p, true);
                     }
                 }
                 break;
             default:
+                // 其它原因导致的指定药水效果的改变, 根据需求的意思可以不做进一步判断
                 if (getConfig().contains("worldList")) {
                     if (getConfig().getConfigurationSection("worldList").contains(p.getWorld().getName())) {
                         applyPotionEffect(p);
@@ -176,6 +188,7 @@ public final class DifferentWorldPotionApplication extends JavaPlugin implements
         return effectList;
     }
 
+    // 对两种获取药水效果类型的简单包装
     private PotionEffectType getTypeByIdOrName(String nameOrId) {
         PotionEffectType potionEffectType = PotionEffectType.getByName(nameOrId);
         if (potionEffectType == null) {
