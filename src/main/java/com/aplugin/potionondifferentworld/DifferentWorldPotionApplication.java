@@ -28,6 +28,11 @@ public final class DifferentWorldPotionApplication extends JavaPlugin implements
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        if (!getConfig().getBoolean("enable")) {
+            getLogger().info("由于在配置中停用了本插件功能, 插件正在关闭");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
         debug = getConfig().getBoolean("debug");
         messagePrefix = ChatColor.GRAY + "[" + ChatColor.GOLD + getName() + ChatColor.GRAY + "]" + ChatColor.RESET + " ";
         getCommand("applypotion").setExecutor(this);
@@ -122,7 +127,8 @@ public final class DifferentWorldPotionApplication extends JavaPlugin implements
         if (!(e.getEntity() instanceof Player)) return;
         Player p = (Player) e.getEntity();
         // 若药水效果的改变是命令或其它插件引起的, 则跳出本方法
-        if (e.getCause() == EntityPotionEffectEvent.Cause.COMMAND || e.getCause() == EntityPotionEffectEvent.Cause.PLUGIN)
+        if (e.getCause() == EntityPotionEffectEvent.Cause.COMMAND || e.getCause() == EntityPotionEffectEvent.Cause.PLUGIN
+                || e.getCause() == EntityPotionEffectEvent.Cause.DEATH)
             return;
         switch (e.getCause()) {
             case MILK:
@@ -140,18 +146,35 @@ public final class DifferentWorldPotionApplication extends JavaPlugin implements
                 }
                 if (e.getOldEffect() != null) {
                     // 判断此过期的药水效果是否在配置中指定的药水效果内
-                    if (/*e.getOldEffect().getType() == desiredEffect*/desiredEffectTypes.contains(e.getOldEffect().getType())) {
+                    if (desiredEffectTypes.contains(e.getOldEffect().getType())) {
                         e.setCancelled(true); // 取消本事件, 并重新设置药水效果
                         applyPotionEffect(p, true);
                     }
                 }
                 break;
             default:
-                // 其它原因导致的指定药水效果的改变, 根据需求的意思可以不做进一步判断
-                if (getConfig().contains("worldList")) {
-                    if (getConfig().getConfigurationSection("worldList").contains(p.getWorld().getName())) {
-                        applyPotionEffect(p);
-                    }
+                List<PotionEffect> effects = getPotionEffectsByWorld(p.getWorld().getName());
+                List<PotionEffectType> effectTypes = new ArrayList<>();
+                for (PotionEffect effect : effects) {
+                    effectTypes.add(effect.getType());
+                }
+                switch (e.getAction()) {
+                    case REMOVED:
+                    case CLEARED:
+                        if (effectTypes.contains(e.getOldEffect().getType())) {
+                            applyPotionEffect(p);
+                        }
+                        break;
+                    case ADDED:
+                        if (effectTypes.contains(e.getNewEffect().getType())) {
+                            applyPotionEffect(p, true);
+                        }
+                        break;
+                    case CHANGED:
+                        if (effectTypes.contains(e.getOldEffect().getType())) {
+                            e.setOverride(false);
+                        }
+                        break;
                 }
         }
     }
