@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -109,6 +110,11 @@ public final class DifferentWorldPotionApplication extends JavaPlugin implements
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         applyPotionEffect(e.getPlayer());
+    }
+
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent e) {
+        Bukkit.getScheduler().runTaskLater(this, () -> applyPotionEffect(e.getPlayer()), 20L);
     }
 
     @EventHandler
