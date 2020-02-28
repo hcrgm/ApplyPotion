@@ -6,10 +6,19 @@ clear: true
 # 是否开启调试模式, 启用调试模式提示消息会增多, 可能刷屏
 debug: false
 # 世界列表, 意义自行体会, effect值为药水效果名或其id
+# 支持多种效果
 worldList:
   world:
-    effect: jump
-    # 药水效果倍数
-    amplifier: 1
-    # 药水效果持续时间, 默认为无限, 单位为秒
-    duration: 1000000
+    effects:
+      jump:
+        # 药水效果强度
+        amplifier: 1
+        # 药水效果持续时间, 默认为无限, 单位为秒
+        duration: 1000000
+        # 是否产生更多的粒子
+        ambient: true
+        # 是否带有粒子
+        particles: true
+      health_boost:
+        amplifier: 1
+        duration: 1000000
