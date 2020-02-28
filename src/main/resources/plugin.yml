@@ -1,7 +1,9 @@
-name: PotionOnDifferentWorld
+name: GlobalPotionEffect
+author: hcrgm
+description: 全局药水效果, 可在多个世界为玩家设置多种全局药水效果
 version: ${project.version}
 api-version: 1.13
-main: com.aplugin.potionondifferentworld.DifferentWorldPotionApplication
+main: net.windit.mcpl.globalpotioneffect.GlobalPotionEffect
 commands:
   applypotion:
     description: 不同世界不同药水效果 - 插件命令(暂只支持重载)
