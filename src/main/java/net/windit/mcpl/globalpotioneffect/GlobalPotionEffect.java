@@ -79,7 +79,7 @@ public final class GlobalPotionEffect extends JavaPlugin implements Listener {
 
     private void applyToAllPlayers() {
         for (Player p : Bukkit.getOnlinePlayers()) {
-            applyPotionEffect(p);
+            applyPotionEffect(p, true);
         }
     }
 
@@ -124,13 +124,13 @@ public final class GlobalPotionEffect extends JavaPlugin implements Listener {
                 p.removePotionEffect(type);
             }
         }
-        applyPotionEffect(e.getPlayer());
+        applyPotionEffect(e.getPlayer(), true);
     }
 
     // 玩家加入时应用
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        applyPotionEffect(e.getPlayer());
+        applyPotionEffect(e.getPlayer(), true);
     }
 
     @EventHandler
