@@ -16,7 +16,7 @@ worldList:
         amplifier: 1
         # 药水效果持续时间, 默认为无限, 单位为秒
         duration: 1000000
-        # 是否产生更多的粒子
+        # 是否使粒子效果透明
         ambient: true
         # 是否带有粒子
         particles: true
