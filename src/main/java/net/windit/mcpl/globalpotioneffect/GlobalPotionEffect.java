@@ -62,17 +62,7 @@ public final class GlobalPotionEffect extends JavaPlugin implements Listener {
         if (getConfig().getBoolean("clear")) {
             // 插件停用时清除本插件对玩家的影响
             for (Player p : Bukkit.getOnlinePlayers()) {
-                // 获取配置中的药水效果列表
-                List<PotionEffect> desiredEffects = getPotionEffectsByWorld(p.getWorld().getName());
-                List<PotionEffectType> desiredEffectTypes = new ArrayList<>();
-                for (PotionEffect effect : desiredEffects) {
-                    desiredEffectTypes.add(effect.getType());
-                }
-                for (PotionEffectType type : desiredEffectTypes) {
-                    if (p.hasPotionEffect(type)) {
-                        p.removePotionEffect(type);
-                    }
-                }
+                removeDesiredEffects(p);
             }
         }
     }
@@ -80,6 +70,19 @@ public final class GlobalPotionEffect extends JavaPlugin implements Listener {
     private void applyToAllPlayers() {
         for (Player p : Bukkit.getOnlinePlayers()) {
             applyPotionEffect(p, true);
+        }
+    }
+
+    private void removeDesiredEffects(Player p) {
+        List<PotionEffect> desiredEffects = getPotionEffectsByWorld(p.getWorld().getName());
+        List<PotionEffectType> desiredEffectTypes = new ArrayList<>();
+        for (PotionEffect effect : desiredEffects) {
+            desiredEffectTypes.add(effect.getType());
+        }
+        for (PotionEffectType type : desiredEffectTypes) {
+            if (p.hasPotionEffect(type)) {
+                p.removePotionEffect(type);
+            }
         }
     }
 
@@ -97,6 +100,9 @@ public final class GlobalPotionEffect extends JavaPlugin implements Listener {
         }
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase("reload")) {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    removeDesiredEffects(p);
+                }
                 reloadConfig();
                 debug = getConfig().getBoolean("debug");
                 applyToAllPlayers();
